@@ -1,20 +1,13 @@
+import { closePopupByEsc, closePopupByClk } from "./index.js";
+
 export function openModal(modalSelector) {
   modalSelector.classList.add("popup_is-opened");
-  document.addEventListener("keydown", closeModal);
-  document.addEventListener("click", closeModal); 
+  document.addEventListener("keydown", closePopupByEsc);
+  document.addEventListener("click", closePopupByClk);
 }
 
-export function closeModal(evt) {
-  if (
-    evt.target.classList.contains("popup_is-opened") ||
-    evt.target.classList.contains("popup__form") ||
-    evt.target.classList.contains("popup__close") ||
-    evt.key === "Escape"
-  ) {
-    document.removeEventListener("keydown", closeModal);
-    document.removeEventListener("click", closeModal);
-    document
-      .querySelector(".popup_is-opened")
-      .classList.remove("popup_is-opened");
-  }
+export function closeModal(modalSelector) {
+  modalSelector.classList.remove("popup_is-opened");
+  document.removeEventListener("keydown", closePopupByEsc);
+  document.removeEventListener("click", closePopupByClk);
 }
