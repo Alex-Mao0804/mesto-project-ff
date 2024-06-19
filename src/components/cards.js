@@ -1,3 +1,4 @@
+import { cardTemplate } from "./index.js";
 export const initialCards = [
   {
     name: "Архыз",
@@ -24,7 +25,6 @@ export const initialCards = [
     link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
   },
 ];
-const cardTemplate = document.querySelector("#card-template").content;
 
 export function createCard(card, deleteCard, likeCard, openImg) {
   const placesItem = cardTemplate
@@ -42,7 +42,7 @@ export function createCard(card, deleteCard, likeCard, openImg) {
   return placesItem;
 }
 export function deleteCard(evt) {
-  evt.target.parentElement.remove();
+  evt.target.closest(".places__item").remove();
 }
 
 export function likeCard(evt) {
