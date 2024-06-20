@@ -1,7 +1,8 @@
 import "../pages/index.css";
-import { initialCards, createCard, deleteCard, likeCard } from "./cards.js";
+import { initialCards } from "./cards.js";
+import { createCard, deleteCard, likeCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
-export { cardTemplate, closePopupByClk, closePopupByEsc };
+export { cardTemplate };
 
 const placesList = document.querySelector(".places__list");
 const pEditButton = document.querySelector(".profile__edit-button");
@@ -56,18 +57,3 @@ function handleFormSubmit(evt) {
   }
   closeModal(evt.target.closest(".popup_is-opened"));
 }
-
-const closePopupByEsc = (evt) => {
-  if (evt.key === "Escape") {
-    closeModal(document.querySelector(".popup_is-opened"));
-  }
-};
-
-const closePopupByClk = (evt) => {
-  if (
-    evt.target.classList.contains("popup_is-opened") ||
-    evt.target.classList.contains("popup__close")
-  ) {
-    closeModal(document.querySelector(".popup_is-opened"));
-  }
-};
