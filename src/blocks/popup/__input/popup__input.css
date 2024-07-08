@@ -10,8 +10,28 @@
   margin-bottom: 10px;
 }
 
+.popup__input:valid {
+  border: 0;
+}
+
+.popup__input:invalid {
+  border-block-end: 1px solid red;
+}
+
 .popup__input:last-of-type {
   margin-bottom: 0;
+}
+
+.name-input-error,
+.description-input-error {
+  display: none;
+}
+
+.form__input-error {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  color: #f00;
 }
 
 @media screen and (max-width: 568px) {
