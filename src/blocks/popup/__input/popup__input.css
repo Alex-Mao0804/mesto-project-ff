@@ -27,7 +27,7 @@
   display: none;
 }
 
-.form__input-error {
+.popup__input_type_error {
   display: block;
   font-weight: 400;
   font-size: 12px;
