@@ -1,17 +1,20 @@
 export { enableValidation, hideInputError };
 function enableValidation(validationConfig) {
-  const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
+  const formList = Array.from(
+    document.querySelectorAll(validationConfig.formSelector)
+  );
   formList.forEach((formElement) => {
     setEventListeners(formElement, validationConfig);
   });
 }
 
 function setEventListeners(formElement, validationConfig) {
-  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const inputList = Array.from(
+    formElement.querySelectorAll(validationConfig.inputSelector)
+  );
   const buttonElement = formElement.querySelector(
     validationConfig.submitButtonSelector
   );
-  // toggleButtonState(inputList, buttonElement, validationConfig);
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", () => {
       isValid(formElement, inputElement, validationConfig);

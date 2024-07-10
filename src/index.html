@@ -50,7 +50,8 @@
               class="popup__input popup__input_type_name"
               placeholder="Имя"
               required
-              minlength="2" maxlength="40"
+              minlength="2"
+              maxlength="40"
               pattern="[a-zA-Zа-яА-Я\-\s]+"
               data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы."
             />
@@ -62,7 +63,8 @@
               class="popup__input popup__input_type_description"
               placeholder="Занятие"
               required
-              minlength="2" maxlength="200"
+              minlength="2"
+              maxlength="200"
               pattern="[a-zA-Zа-яА-Я\-\s]+"
               data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы."
             />
@@ -84,7 +86,8 @@
               name="place-name"
               class="popup__input popup__input_type_card-name"
               placeholder="Название"
-              minlength="2" maxlength="30"
+              minlength="2"
+              maxlength="30"
               pattern="[a-zA-Zа-яА-Я\-\s]+"
               data-error-message="Разрешены только латинские и кириллические буквы, знаки дефиса и пробелы."
               required
@@ -109,9 +112,9 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Вы уверены?</h3>
-            <button type="submit" class="button popup__button popup__button-del">
-              Да
-            </button>
+          <button type="submit" class="button popup__button popup__button-del">
+            Да
+          </button>
         </div>
       </div>
       <div class="popup popup_type_update-avatar">
@@ -142,8 +145,6 @@
         </div>
       </div>
     </div>
-    <!-- <script src="./scripts/cards.js"></script>
-<script src="./scripts/index.js" defer></script> -->
 
     <template id="card-template">
       <li class="places__item card">
@@ -152,8 +153,8 @@
         <div class="card__description">
           <h2 class="card__title"></h2>
           <div class="card__like">
-          <button type="button" class="card__like-button"></button>
-          <span class="card__like-counter"></span>
+            <button type="button" class="card__like-button"></button>
+            <span class="card__like-counter"></span>
           </div>
         </div>
       </li>
