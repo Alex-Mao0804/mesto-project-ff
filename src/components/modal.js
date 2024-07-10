@@ -2,6 +2,7 @@ export function openModal(modalSelector) {
   modalSelector.classList.add("popup_is-opened");
   document.addEventListener("keydown", closePopupByEsc);
   document.addEventListener("click", closePopupByClk);
+  modalSelector.querySelector(".popup__form").setAttribute('novalidate', '');
 }
 
 export function closeModal(modalSelector) {

@@ -10,11 +10,7 @@
   margin-bottom: 10px;
 }
 
-.popup__input:valid {
-  border: 0;
-}
-
-.popup__input:invalid {
+.popup__input:user-invalid {
   border-block-end: 1px solid red;
 }
 
