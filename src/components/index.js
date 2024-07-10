@@ -50,6 +50,7 @@ popupTypeImg.classList.add("popup_is-animated");
 popupTypeEdit.classList.add("popup_is-animated");
 popupTypeNewCard.classList.add("popup_is-animated");
 popupTypeDeleteCard.classList.add("popup_is-animated");
+popupUpdateAvatar.classList.add("popup_is-animated");
 formEditProfile.addEventListener("submit", handleFormSubmit);
 formNewPlace.addEventListener("submit", handleFormSubmit);
 formUpdateAvatar.addEventListener("submit", handleFormSubmit);
