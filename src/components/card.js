@@ -1,5 +1,5 @@
 import { cardTemplate } from "./index.js";
-export function createCard(card, deleteCard, likeCard, openImg, myCard, openDel, myId) {
+export function createCard(card, deleteCard, likeCard, openImg, openDel, myId) {
   const placesItem = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -7,26 +7,21 @@ export function createCard(card, deleteCard, likeCard, openImg, myCard, openDel,
   const cardImage = placesItem.querySelector(".card__image");
   const buttonLike = placesItem.querySelector(".card__like-button");
   const counterLike = placesItem.querySelector(".card__like-counter");
-  if ('likes' in card) {
     counterLike.textContent = card.likes.length;
     card.likes.forEach((like) => {
       if (like._id === myId) {
         buttonLike.classList.add("card__like-button_is-active");
        }
     })
-  } else {
-    counterLike.textContent = 0;
-  }
   cardImage.src = card.link;
   cardImage.alt = "Местность " + card.name;
   placesItem.querySelector(".card__title").textContent = card.name;
   cardImage.addEventListener("click", openImg);
-  if (myCard) {
-  // buttonDel.addEventListener("click", deleteCard);
+  if (card.owner._id === myId) {
+    // console.log(card._id);
   buttonDel.addEventListener("click", (evt) => {
     openDel(evt, card._id);
   } );
-
   } else {
     buttonDel.remove();
   }
@@ -37,6 +32,7 @@ export function createCard(card, deleteCard, likeCard, openImg, myCard, openDel,
 }
 export function deleteCard(evt) {
   evt.target.closest(".places__item").remove();
+
 }
 
 export function likeCard(evt, card, counterLike) {
