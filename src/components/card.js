@@ -1,5 +1,6 @@
 import { cardTemplate } from "./index.js";
-export function createCard(card, deleteCard, likeCard, openImg, openDel, myId) {
+import { fetchLikeCard } from "./api.js";
+export function createCard(card, likeCard, openImg, openDel, myId) {
   const placesItem = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -38,34 +39,40 @@ export function deleteCard(evt) {
 export function likeCard(evt, card, counterLike) {
   if (!evt.target.classList.contains("card__like-button_is-active")) {
     
-  
-  fetch('https://nomoreparties.co/v1/wff-cohort-18/cards/likes/' + card._id, {
-    method: 'PUT',
-    headers: {
-      authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-      'Content-Type': 'application/json'
-    }
-  })
+    fetchLikeCard('PUT', card._id)
+  // fetch('https://nomoreparties.co/v1/wff-cohort-18/cards/likes/' + card._id, {
+  //   method: 'PUT',
+  //   headers: {
+  //     authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
+  //     'Content-Type': 'application/json'
+  //   }
+  // })
 
-  .then((res) =>  res.json())
+  // .then((res) =>  res.json())
   .then((data) => {
     counterLike.textContent = data.likes.length;
   })
-
+  .catch(error => {
+    console.error('Ошибка добавления лайка:', error);
+  })
 
 } else {
 
-  fetch('https://nomoreparties.co/v1/wff-cohort-18/cards/likes/' + card._id, {
-    method: 'DELETE',
-    headers: {
-      authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-      'Content-Type': 'application/json'
-    }
-  })
+  fetchLikeCard('DELETE', card._id)
+  // fetch('https://nomoreparties.co/v1/wff-cohort-18/cards/likes/' + card._id, {
+  //   method: 'DELETE',
+  //   headers: {
+  //     authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
+  //     'Content-Type': 'application/json'
+  //   }
+  // })
 
-  .then((res) => res.json())
+  // .then((res) => res.json())
   .then((data) => {
     counterLike.textContent = data.likes.length;
+  })
+  .catch(error => {
+    console.error('Ошибка удаления лайка:', error);
   })
 
 }

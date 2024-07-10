@@ -3,6 +3,7 @@ import { createCard, deleteCard, likeCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
 export { cardTemplate };
 import { enableValidation, hideInputError } from "./validation.js";
+import { getInitialCards, getInitialProfile, postCardData, patchProfileData, fetchDeleteCard } from "./api.js";
 
 let myId;
 const profileImage = document.querySelector('.profile__image');
@@ -29,33 +30,17 @@ formNewPlace.addEventListener("submit", handleFormSubmit);
 formUpdateAvatar.addEventListener("submit", handleFormSubmit);
 const cardTemplate = document.querySelector("#card-template").content;
 
-// function search(entity, entityId) {
-//   return fetch(`https://swapi.nomoreparties.co/${entity}/${entityId}`)
-//   }
 
-function openDel(evt, id) {
+function openDel(evt, CardId) {
   openModal(popupTypeDeleteCard);
   
   const clickHandler = () => {
-      fetch('https://nomoreparties.co/v1/wff-cohort-18/cards/' + id, {
-          method: 'DELETE',
-          headers: {
-              authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-              'Content-Type': 'application/json'
-          }
-      })
-      .then(res => {
-          if(res.ok) {
-              return res.json();
-          } else {
-              return Promise.reject(res.status);
-          }
-      })
+    fetchDeleteCard(CardId)
       .catch(error => {
           console.error('Ошибка удаления карточки:', error);
       })
       .finally(() => {
-          pDelButton.removeEventListener("click", clickHandler); // Удаление слушателя после получения ответа от сервера
+          pDelButton.removeEventListener("click", clickHandler); 
           deleteCard(evt);
           closeModal(popupTypeDeleteCard);
       });
@@ -78,12 +63,18 @@ function openImg(evt) {
 }
 
 pEditButton.addEventListener("click", (evt) => {
-  openModal(popupTypeEdit);
-  Promise.all([profileRequest])
-  .then(([profileResult]) => {
+
+  getInitialProfile()
+  .then((profileResult) => {
     formEditProfile.elements.name.value = profileResult.name;
     formEditProfile.elements.description.value = profileResult.about;
   })
+  .catch(error => {
+    console.error('Ошибка получения профиля:', error);
+  })
+  .finally (() => {
+    openModal(popupTypeEdit);
+      });
   clearValidation(popupTypeEdit, validationConfig);
 });
 
@@ -96,19 +87,20 @@ function handleFormSubmit(evt) {
   evt.preventDefault();
   if (evt.target === formEditProfile) {
     renderLoading(true, formEditProfile);
-
-  fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {
-    method: 'PATCH',
-    headers: {
-      authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: formEditProfile.elements.name.value,
-      about: formEditProfile.elements.description.value
-    })
-  })
-  .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    patchProfileData({name: formEditProfile.elements.name.value,
+      about: formEditProfile.elements.description.value}, "")
+  // fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {
+  //   method: 'PATCH',
+  //   headers: {
+  //     authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
+  //     'Content-Type': 'application/json'
+  //   },
+  //   body: JSON.stringify({
+  //     name: formEditProfile.elements.name.value,
+  //     about: formEditProfile.elements.description.value
+  //   })
+  // })
+  // .then(res => res.ok ? res.json() : Promise.reject(res.status))
   .then(data => {
     profileTitle.textContent = data.name;
     profileDescription.textContent = data.about;
@@ -122,21 +114,21 @@ function handleFormSubmit(evt) {
       });
   } else if (evt.target === formNewPlace) {
     renderLoading(true, formNewPlace);
-
-    fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {
-      method: 'POST',
-      headers: {
-        authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: formNewPlace.elements["place-name"].value,
-        link: formNewPlace.elements.link.value
-      })
-    })
-    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    postCardData({name: formNewPlace.elements["place-name"].value, link: formNewPlace.elements.link.value})
+    // fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {
+    //   method: 'POST',
+    //   headers: {
+    //     authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     name: formNewPlace.elements["place-name"].value,
+    //     link: formNewPlace.elements.link.value
+    //   })
+    // })
+    // .then(res => res.ok ? res.json() : Promise.reject(res.status))
     .then(data => {
-      placesList.prepend(createCard(data, deleteCard, likeCard, openImg, openDel, myId));
+      placesList.prepend(createCard(data, likeCard, openImg, openDel, myId));
     })
     .catch(error => {
       console.error('Ошибка добавления карточки:', error);
@@ -150,18 +142,18 @@ function handleFormSubmit(evt) {
 
   } else if (evt.target === formUpdateAvatar) {
     renderLoading(true, formUpdateAvatar);
-
-    fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me/avatar', {
-      method: 'PATCH',
-      headers: {
-        authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        avatar: formUpdateAvatar.elements.link.value
-      })
-    })
-    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    patchProfileData({avatar: formUpdateAvatar.elements.link.value}, "avatar")
+    // fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me/avatar', {
+    //   method: 'PATCH',
+    //   headers: {
+    //     authorization: '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff',
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({
+    //     avatar: formUpdateAvatar.elements.link.value
+    //   })
+    // })
+    // .then(res => res.ok ? res.json() : Promise.reject(res.status))
     .then((data) => {
       profileImage.style.backgroundImage = `url(${data.avatar})`;
       formUpdateAvatar.reset();
@@ -204,19 +196,15 @@ function clearValidation(profileForm, validationConfig) {
   buttonElement.classList.add(validationConfig.inactiveButtonClass);
 }
 
-const profileRequest = fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {
-  headers: {
-    'Authorization': '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff'
-  }
-}).then(res => res.json());
+// const profileRequest = fetch('https://nomoreparties.co/v1/wff-cohort-18/users/me', {
+//   headers: {
+//     'Authorization': '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff'
+//   }
+// }).then(res => res.json());
 
-const cardsRequest = fetch('https://nomoreparties.co/v1/wff-cohort-18/cards', {
-  headers: {
-    'Authorization': '50cc4bdf-fea2-4b75-a23a-f7aeee79c7ff'
-  }
-}).then(res => res.json());
 
-Promise.all([profileRequest, cardsRequest])
+
+Promise.all([getInitialProfile(), getInitialCards()])
   .then(([profileResult, cardsResult]) => {
     profileTitle.textContent = profileResult.name;
     profileDescription.textContent = profileResult.about;
@@ -226,7 +214,7 @@ Promise.all([profileRequest, cardsRequest])
     console.log(cardsResult);
     // console.log(myId);
     cardsResult.forEach(card => {
-        placesList.append(createCard(card, deleteCard, likeCard, openImg, openDel, myId));
+        placesList.append(createCard(card, likeCard, openImg, openDel, myId));
     });
   })
   .catch(error => {
