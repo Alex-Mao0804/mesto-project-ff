@@ -6,14 +6,18 @@ const config = {
   },
 };
 
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка ${res.status}`);
+}
+
 export const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers,
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };
 
@@ -21,10 +25,7 @@ export const getInitialProfile = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers,
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };
 
@@ -34,10 +35,7 @@ export const postCardData = (body) => {
     headers: config.headers,
     body: JSON.stringify(body),
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };
 
@@ -46,10 +44,7 @@ export const fetchDeleteCard = (CardId) => {
     method: "DELETE",
     headers: config.headers,
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };
 
@@ -59,10 +54,7 @@ export const patchProfileData = (body, avatar) => {
     headers: config.headers,
     body: JSON.stringify(body),
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };
 
@@ -71,9 +63,6 @@ export const fetchLikeCard = (fetchMethod, CardId) => {
     method: fetchMethod,
     headers: config.headers,
   }).then((res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return checkResponse(res);
   });
 };

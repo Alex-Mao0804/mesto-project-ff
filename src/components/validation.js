@@ -1,4 +1,4 @@
-export { enableValidation, hideInputError };
+export { enableValidation, clearValidation };
 function enableValidation(validationConfig) {
   const formList = Array.from(
     document.querySelectorAll(validationConfig.formSelector)
@@ -50,16 +50,34 @@ function hideInputError(formElement, inputElement, validationConfig) {
 
 function toggleButtonState(inputList, buttonElement, validationConfig) {
   if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
+    disableButton(buttonElement, validationConfig);
   } else {
     buttonElement.disabled = false;
     buttonElement.classList.remove(validationConfig.inactiveButtonClass);
   }
 }
 
+function disableButton(buttonElement, validationConfig) {
+  buttonElement.disabled = true;
+  buttonElement.classList.add(validationConfig.inactiveButtonClass);
+}
+
 function hasInvalidInput(inputList) {
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
   });
+}
+
+function clearValidation(profileForm, validationConfig) {
+  const inputList = Array.from(
+    profileForm.querySelectorAll(validationConfig.inputSelector)
+  );
+  const buttonElement = profileForm.querySelector(
+    validationConfig.submitButtonSelector
+  );
+  inputList.forEach((inputElement) => {
+    hideInputError(profileForm, inputElement, validationConfig);
+    inputElement.setCustomValidity("");
+  });
+  disableButton(buttonElement, validationConfig);
 }

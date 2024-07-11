@@ -26,7 +26,9 @@
   color: #000;
 }
 
-.popup__button:hover {
+
+
+.popup__button:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.8);
   cursor: pointer;
 }

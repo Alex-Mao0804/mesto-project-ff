@@ -79,7 +79,7 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Новое место</h3>
-          <form class="popup__form" name="new-place">
+          <form class="popup__form" name="new-place" novalidate>
             <input
               id="place-name-input"
               type="text"
@@ -94,14 +94,14 @@
             />
             <span class="place-name-input-error"></span>
             <input
-              id="link-input"
+              id="link-input-avatar"
               type="url"
               name="link"
               class="popup__input popup__input_type_url"
               placeholder="Ссылка на картинку"
               required
             />
-            <span class="link-input-error"></span>
+            <span class="link-input-avatar-error"></span>
             <button type="submit" class="button popup__button">
               Сохранить
             </button>
@@ -121,7 +121,7 @@
         <div class="popup__content">
           <button type="button" class="popup__close"></button>
           <h3 class="popup__title">Обновить аватар</h3>
-          <form class="popup__form" name="update-avatar">
+          <form class="popup__form" name="update-avatar" novalidate>
             <input
               id="link-input"
               type="url"

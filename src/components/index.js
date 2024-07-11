@@ -1,8 +1,8 @@
 import "../pages/index.css";
 import { createCard, deleteCard, likeCard } from "./card.js";
 import { openModal, closeModal } from "./modal.js";
-export { cardTemplate };
-import { enableValidation, hideInputError } from "./validation.js";
+// export { cardTemplate };
+import { enableValidation, clearValidation } from "./validation.js";
 import {
   getInitialCards,
   getInitialProfile,
@@ -10,7 +10,6 @@ import {
   patchProfileData,
   fetchDeleteCard,
 } from "./api.js";
-
 
 let myId;
 const validationConfig = {
@@ -51,138 +50,132 @@ popupTypeEdit.classList.add("popup_is-animated");
 popupTypeNewCard.classList.add("popup_is-animated");
 popupTypeDeleteCard.classList.add("popup_is-animated");
 popupUpdateAvatar.classList.add("popup_is-animated");
-formEditProfile.addEventListener("submit", handleFormSubmit);
-formNewPlace.addEventListener("submit", handleFormSubmit);
-formUpdateAvatar.addEventListener("submit", handleFormSubmit);
+formEditProfile.addEventListener("submit", handleEditProfile);
+formNewPlace.addEventListener("submit", handleNewPlace);
+formUpdateAvatar.addEventListener("submit", handleUpdateAvatar);
+pDelButton.addEventListener("click", handleSubmitConfirmPopupForm);
+
+// Элементы модального окна
+const elementsImg = popupTypeImg.querySelector(".popup__image");
 
 const cardTemplate = document.querySelector("#card-template").content;
 
-function openDel(evt, CardId) {
-  openModal(popupTypeDeleteCard);
-
-  const clickHandler = () => {
-    fetchDeleteCard(CardId)
-      .catch((error) => {
-        console.error("Ошибка удаления карточки:", error);
-      })
-      .finally(() => {
-        pDelButton.removeEventListener("click", clickHandler);
-        deleteCard(evt);
-        closeModal(popupTypeDeleteCard);
-      });
-  };
-
-  pDelButton.addEventListener("click", clickHandler);
+let handleSubmitConfirmPopup;
+function handleSubmitConfirmPopupForm() {
+  handleSubmitConfirmPopup();
 }
 
-profileImage.addEventListener("click", (evt) => {
+function openDel(evt, CardId) {
+  handleSubmitConfirmPopup = () => {
+    fetchDeleteCard(CardId)
+      .then(() => {
+        deleteCard(evt);
+        closeModal(popupTypeDeleteCard);
+      })
+      .catch((error) => {
+        console.error("Ошибка удаления карточки:", error);
+      });
+  };
+  openModal(popupTypeDeleteCard);
+}
+
+profileImage.addEventListener("click", () => {
+  formUpdateAvatar.reset();
+  clearValidation(popupUpdateAvatar, validationConfig);
   openModal(popupUpdateAvatar);
 });
 
-function openImg(evt) {
+function openImg(card) {
   openModal(popupTypeImg);
-  popupTypeImg.querySelector(".popup__image").src = evt.target.src;
-  popupTypeImg.querySelector(".popup__image").alt = evt.target.alt;
-  popupTypeImg.querySelector(".popup__caption").textContent = evt.target.alt;
+  elementsImg.src = card.link;
+  elementsImg.alt = "Местность " + card.name;
+  popupTypeImg.querySelector(".popup__caption").textContent = card.name;
 }
 
-pEditButton.addEventListener("click", (evt) => {
-  getInitialProfile()
-    .then((profileResult) => {
-      formEditProfile.elements.name.value = profileResult.name;
-      formEditProfile.elements.description.value = profileResult.about;
-    })
-    .catch((error) => {
-      console.error("Ошибка получения профиля:", error);
-    })
-    .finally(() => {
-      openModal(popupTypeEdit);
-    });
+pEditButton.addEventListener("click", () => {
+  formEditProfile.reset();
+  formEditProfile.elements.name.value = profileTitle.textContent;
+  formEditProfile.elements.description.value = profileDescription.textContent;
+
   clearValidation(popupTypeEdit, validationConfig);
+
+  openModal(popupTypeEdit);
 });
 
 pAddButton.addEventListener("click", (evt) => {
-  openModal(popupTypeNewCard);
+  formNewPlace.reset();
   clearValidation(formNewPlace, validationConfig);
+  openModal(popupTypeNewCard);
 });
 
-function handleFormSubmit(evt) {
+function handleEditProfile(evt) {
   evt.preventDefault();
-  if (evt.target === formEditProfile) {
-    renderLoading(true, formEditProfile);
-    patchProfileData(
-      {
-        name: formEditProfile.elements.name.value,
-        about: formEditProfile.elements.description.value,
-      },
-      ""
-    )
-      .then((data) => {
-        profileTitle.textContent = data.name;
-        profileDescription.textContent = data.about;
-      })
-      .catch((error) => {
-        console.error("Ошибка изменения профиля:", error);
-      })
-      .finally(() => {
-        renderLoading(false, formEditProfile);
-        closeModal(evt.target.closest(".popup_is-opened"));
-      });
-  } else if (evt.target === formNewPlace) {
-    renderLoading(true, formNewPlace);
-    postCardData({
-      name: formNewPlace.elements["place-name"].value,
-      link: formNewPlace.elements.link.value,
+
+  renderLoading(true, formEditProfile);
+  patchProfileData(
+    {
+      name: formEditProfile.elements.name.value,
+      about: formEditProfile.elements.description.value,
+    },
+    ""
+  )
+    .then((data) => {
+      profileTitle.textContent = data.name;
+      profileDescription.textContent = data.about;
+      closeModal(popupTypeEdit);
     })
-      .then((data) => {
-        placesList.prepend(createCard(data, likeCard, openImg, openDel, myId));
-      })
-      .catch((error) => {
-        console.error("Ошибка добавления карточки:", error);
-      })
-      .finally(() => {
-        renderLoading(false, formNewPlace);
-        closeModal(evt.target.closest(".popup_is-opened"));
-        formNewPlace.reset();
-        clearValidation(formNewPlace, validationConfig);
-      });
-  } else if (evt.target === formUpdateAvatar) {
-    renderLoading(true, formUpdateAvatar);
-    patchProfileData({ avatar: formUpdateAvatar.elements.link.value }, "avatar")
-      .then((data) => {
-        profileImage.style.backgroundImage = `url(${data.avatar})`;
-        formUpdateAvatar.reset();
-      })
-      .catch((error) => {
-        console.error("Ошибка изменения аватара:", error);
-      })
-      .finally(() => {
-        renderLoading(false, formUpdateAvatar);
-        closeModal(evt.target.closest(".popup_is-opened"));
-        formUpdateAvatar.reset();
-        clearValidation(formUpdateAvatar, validationConfig);
-      });
-  }
+    .catch((error) => {
+      console.error("Ошибка изменения профиля:", error);
+    })
+    .finally(() => {
+      renderLoading(false, formEditProfile);
+    });
 }
 
+function handleNewPlace(evt) {
+  evt.preventDefault();
 
+  renderLoading(true, formNewPlace);
+  postCardData({
+    name: formNewPlace.elements["place-name"].value,
+    link: formNewPlace.elements.link.value,
+  })
+    .then((data) => {
+      placesList.prepend(
+        createCard(data, likeCard, openImg, openDel, myId, cardTemplate)
+      );
+      closeModal(popupTypeNewCard);
+      formNewPlace.reset();
+      clearValidation(formNewPlace, validationConfig);
+    })
+    .catch((error) => {
+      console.error("Ошибка добавления карточки:", error);
+    })
+    .finally(() => {
+      renderLoading(false, formNewPlace);
+    });
+}
+
+function handleUpdateAvatar(evt) {
+  evt.preventDefault();
+
+  renderLoading(true, formUpdateAvatar);
+  patchProfileData({ avatar: formUpdateAvatar.elements.link.value }, "avatar")
+    .then((data) => {
+      profileImage.style.backgroundImage = `url(${data.avatar})`;
+      closeModal(popupUpdateAvatar);
+      formUpdateAvatar.reset();
+      clearValidation(formUpdateAvatar, validationConfig);
+    })
+    .catch((error) => {
+      console.error("Ошибка изменения аватара:", error);
+    })
+    .finally(() => {
+      renderLoading(false, formUpdateAvatar);
+    });
+}
 
 enableValidation(validationConfig);
-
-function clearValidation(profileForm, validationConfig) {
-  const inputList = Array.from(
-    profileForm.querySelectorAll(validationConfig.inputSelector)
-  );
-  const buttonElement = profileForm.querySelector(
-    validationConfig.submitButtonSelector
-  );
-  inputList.forEach((inputElement) => {
-    hideInputError(profileForm, inputElement, validationConfig);
-    inputElement.setCustomValidity("");
-  });
-  buttonElement.disabled = true;
-  buttonElement.classList.add(validationConfig.inactiveButtonClass);
-}
 
 Promise.all([getInitialProfile(), getInitialCards()])
   .then(([profileResult, cardsResult]) => {
@@ -191,7 +184,9 @@ Promise.all([getInitialProfile(), getInitialCards()])
     myId = profileResult._id;
     profileImage.style.backgroundImage = `url(${profileResult.avatar})`;
     cardsResult.forEach((card) => {
-      placesList.append(createCard(card, likeCard, openImg, openDel, myId));
+      placesList.append(
+        createCard(card, likeCard, openImg, openDel, myId, cardTemplate)
+      );
     });
   })
   .catch((error) => {

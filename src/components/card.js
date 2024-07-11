@@ -1,6 +1,12 @@
-import { cardTemplate } from "./index.js";
 import { fetchLikeCard } from "./api.js";
-export function createCard(card, likeCard, openImg, openDel, myId) {
+export function createCard(
+  card,
+  likeCard,
+  openImg,
+  openDel,
+  myId,
+  cardTemplate
+) {
   const placesItem = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -17,9 +23,10 @@ export function createCard(card, likeCard, openImg, openDel, myId) {
   cardImage.src = card.link;
   cardImage.alt = "Местность " + card.name;
   placesItem.querySelector(".card__title").textContent = card.name;
-  cardImage.addEventListener("click", openImg);
+  cardImage.addEventListener("click", () => {
+    openImg(card);
+  });
   if (card.owner._id === myId) {
-    // console.log(card._id);
     buttonDel.addEventListener("click", (evt) => {
       openDel(evt, card._id);
     });
@@ -40,6 +47,7 @@ export function likeCard(evt, card, counterLike) {
     fetchLikeCard("PUT", card._id)
       .then((data) => {
         counterLike.textContent = data.likes.length;
+        evt.target.classList.toggle("card__like-button_is-active");
       })
       .catch((error) => {
         console.error("Ошибка добавления лайка:", error);
@@ -48,10 +56,10 @@ export function likeCard(evt, card, counterLike) {
     fetchLikeCard("DELETE", card._id)
       .then((data) => {
         counterLike.textContent = data.likes.length;
+        evt.target.classList.toggle("card__like-button_is-active");
       })
       .catch((error) => {
         console.error("Ошибка удаления лайка:", error);
       });
   }
-  evt.target.classList.toggle("card__like-button_is-active");
 }
